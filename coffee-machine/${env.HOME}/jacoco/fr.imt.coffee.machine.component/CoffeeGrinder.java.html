@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoffeeGrinder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">coffee-machine</a> &gt; <a href="index.source.html" class="el_package">fr.imt.coffee.machine.component</a> &gt; <span class="el_source">CoffeeGrinder.java</span></div><h1>CoffeeGrinder.java</h1><pre class="source lang-java linenums">package fr.imt.coffee.machine.component;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class CoffeeGrinder {
+<span class="fc" id="L7">    public static final Logger logger = LogManager.getLogger(CoffeeGrinder.class);</span>
+    private final int grindingTime;
+
+    /**
+     * Constructeur du moulin à café intégré dans la machine
+     * @param grindingTime Temps que met le moulin pour moudre le café en millisecondes
+     */
+<span class="fc" id="L14">    public CoffeeGrinder(int grindingTime) {</span>
+<span class="fc" id="L15">        this.grindingTime = grindingTime;</span>
+<span class="fc" id="L16">    }</span>
+
+    /**
+     * Moue le volume de café spécifié dans le réservoir beanTank
+     * durée du pompage : (volume en L / débit de la pompe en L/seconde) * 1000 pour les ms * 2
+     * @param beanTank Réservoir de café
+     * @return Temps pour moudre le café
+     * @throws InterruptedException Exception levée en cas de problèmes lors du sleep par le Thread
+     */
+    public double grindCoffee(BeanTank beanTank) throws InterruptedException {
+<span class="nc" id="L26">        logger.info(&quot;Grinding time : &quot;  +  grindingTime);</span>
+<span class="nc" id="L27">        logger.info(&quot;Grinding...&quot;);</span>
+<span class="nc" id="L28">        Thread.sleep(grindingTime);</span>
+<span class="nc" id="L29">        beanTank.increaseVolumeInTank(0.2);</span>
+<span class="nc" id="L30">        logger.info(&quot;Grinding OK&quot;);</span>
+<span class="nc" id="L31">        return grindingTime;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

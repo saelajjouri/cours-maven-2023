@@ -14,7 +14,7 @@ public class ElectricalResistanceTest {
      @param waterVolume Volume d'eau en litre.
      */
     public double computeHeatingTime(double power, double waterVolume){
-        return ((waterVolume * 4180 * (90 - 20)) / power) * 1000 / 10;
+        return ((waterVolume * 5180 * (90 - 20)) / power) * 1000 / 10;
     }
 
     /**

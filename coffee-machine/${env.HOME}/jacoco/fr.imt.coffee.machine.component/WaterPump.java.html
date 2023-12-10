@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>WaterPump.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">coffee-machine</a> &gt; <a href="index.source.html" class="el_package">fr.imt.coffee.machine.component</a> &gt; <span class="el_source">WaterPump.java</span></div><h1>WaterPump.java</h1><pre class="source lang-java linenums">package fr.imt.coffee.machine.component;
+
+import fr.imt.coffee.MainCoffee;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+public class WaterPump {
+
+<span class="fc" id="L9">    public static final Logger logger = LogManager.getLogger(WaterPump.class);</span>
+    private final double pumpingCapacity;
+
+    /**
+     * Pompe à eau de la cafetière
+     * @param pumpingCapacity Capacité de la pompe en litres par secondes
+     */
+<span class="fc" id="L16">    public WaterPump(double pumpingCapacity){</span>
+<span class="fc" id="L17">        this.pumpingCapacity = pumpingCapacity;</span>
+<span class="fc" id="L18">    }</span>
+
+    /**
+     * Pompe le volume d'eau spécifié dans le réservoir
+     * durée du pompage : (volume en L / débit de la pompe en L/seconde) * 1000 pour les ms * 2
+     * @param waterVolume Volume d'eau à pomper
+     * @param waterTank Réservoir d'eau
+     * @return Temps de pompage en millisecondes multiplié par 2
+     * @throws InterruptedException Exception levée en cas de problèmes lors du sleep par le Thread
+     */
+    public double pumpWater(double waterVolume, WaterTank waterTank) throws InterruptedException {
+<span class="nc" id="L29">        double pumpingTime = (waterVolume / pumpingCapacity) * 1000 * 2;</span>
+<span class="nc" id="L30">        logger.info(&quot;Pumping time : &quot;  +  pumpingTime);</span>
+<span class="nc" id="L31">        logger.info(&quot;Pumping...&quot;);</span>
+<span class="nc" id="L32">        Thread.sleep((long) (pumpingTime));</span>
+<span class="nc" id="L33">        waterTank.decreaseVolumeInTank(waterVolume);</span>
+<span class="nc" id="L34">        logger.info(&quot;Pumping OK&quot;);</span>
+<span class="nc" id="L35">        return pumpingTime;</span>
+    }
+
+    public double getPumpingCapacity() {
+<span class="nc" id="L39">        return pumpingCapacity;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>
