@@ -1,0 +1,10 @@
+fr\imt\cours\storage\container\Mug.class
+fr\imt\cours\storage\container\CoffeeMug.class
+fr\imt\cours\storage\exception\ExceptionContainerCreation.class
+fr\imt\cours\storage\coffee\type\CoffeeType.class
+fr\imt\cours\storage\container\Cup.class
+fr\imt\cours\storage\container\Container.class
+fr\imt\cours\storage\FabricCupboardContainer.class
+fr\imt\cours\storage\container\CoffeeContainer.class
+fr\imt\cours\storage\container\CoffeeCup.class
+fr\imt\cours\storage\exception\CupNotEmptyException.class

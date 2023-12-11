@@ -1,0 +1,13 @@
+fr\imt\cours\machine\component\WaterPump.class
+fr\imt\cours\machine\component\ElectricalResistance.class
+fr\imt\cours\machine\component\Tank.class
+fr\imt\cours\machine\component\CoffeeGrinder.class
+fr\imt\cours\machine\exception\CoffeeTypeCupDifferentOfCoffeeTypeTankException.class
+fr\imt\cours\machine\component\SteamPipe.class
+fr\imt\cours\machine\EspressoCoffeeMachine.class
+fr\imt\cours\machine\CoffeeMachine.class
+fr\imt\cours\machine\exception\MachineNotPluggedException.class
+fr\imt\cours\machine\component\BeanTank.class
+fr\imt\cours\machine\exception\LackOfWaterInTankException.class
+fr\imt\cours\machine\component\WaterTank.class
+fr\imt\cours\machine\exception\CannotMakeCremaWithSimpleCoffeeMachine.class
