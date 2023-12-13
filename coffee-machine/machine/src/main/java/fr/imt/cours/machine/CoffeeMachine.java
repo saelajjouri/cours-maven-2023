@@ -88,6 +88,10 @@ public class CoffeeMachine {
         if(!isPlugged){
             throw new MachineNotPluggedException("You must plug your coffee machine.");
         }
+        if(isOutOfOrder){
+            logger.warn("The machine is out of order. Please reset the coffee machine");
+            return null;
+        }
 
         if (waterTank.getActualVolume() < container.getCapacity()){
             throw new LackOfWaterInTankException("You must add more water in the water tank.");
@@ -101,12 +105,7 @@ public class CoffeeMachine {
             throw new CoffeeTypeCupDifferentOfCoffeeTypeTankException("The type of coffee to be made in the cup is different from that in the tank.");
         }
 
-        coffeeMachineFailure();
-
-        if(isOutOfOrder){
-            logger.warn("The machine is out of order. Please reset the coffee machine");
-            return null;
-        }
+        //coffeeMachineFailure();
 
         if(coffeeType.toString().contains("_CREMA")){
             throw new CannotMakeCremaWithSimpleCoffeeMachine("You cannot make an espresso with a CoffeeMachine, please use EspressoCoffeeMachine");
@@ -122,7 +121,7 @@ public class CoffeeMachine {
         if(container instanceof Mug)
             coffeeContainer = new CoffeeMug((Mug) container, coffeeType);
 
-        coffeeContainer.setEmpty(true);
+        coffeeContainer.setEmpty(false);
         return coffeeContainer;
     }
 

@@ -44,4 +44,10 @@ public class Tank {
     public double getActualVolume() {
         return actualVolume;
     }
+
+    public void setActualVolume(double actualVolume) {
+
+    this.actualVolume=actualVolume;
+    }
 }
+

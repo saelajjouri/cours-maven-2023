@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EspressoCoffeeMachine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">machine</a> &gt; <a href="index.source.html" class="el_package">fr.imt.cours.machine</a> &gt; <span class="el_source">EspressoCoffeeMachine.java</span></div><h1>EspressoCoffeeMachine.java</h1><pre class="source lang-java linenums">package fr.imt.cours.machine;
+
+
+import fr.imt.cours.machine.component.BeanTank;
+import fr.imt.cours.machine.component.SteamPipe;
+import fr.imt.cours.machine.exception.CoffeeTypeCupDifferentOfCoffeeTypeTankException;
+import fr.imt.cours.machine.exception.LackOfWaterInTankException;
+import fr.imt.cours.storage.coffee.type.CoffeeType;
+import fr.imt.cours.storage.container.*;
+import fr.imt.cours.storage.exception.CupNotEmptyException;
+import fr.imt.cours.machine.exception.*;
+
+public class EspressoCoffeeMachine extends CoffeeMachine {
+
+    private final BeanTank secondaryBeanTank;
+    private final SteamPipe steamPipe;
+    public EspressoCoffeeMachine(double minCoffeeBeanTank, double maxCoffeeBeanTank,
+                                 double minWaterTank, double maxWaterTank,
+                                 double pumpingCapacity) {
+<span class="fc" id="L20">        super(minCoffeeBeanTank, maxCoffeeBeanTank, minWaterTank, maxWaterTank, pumpingCapacity);</span>
+<span class="fc" id="L21">        this.secondaryBeanTank = new BeanTank(0, minCoffeeBeanTank, maxCoffeeBeanTank, null);</span>
+<span class="fc" id="L22">        this.steamPipe = new SteamPipe();</span>
+<span class="fc" id="L23">    }</span>
+
+    /**
+     * Permet de faire couler un café à partir d'un contenant et d'un type de café
+     * Doit retourner une instance d'un objet CoffeeMug ou CoffeeCup quand un Mug ou un Cup est passé en paramètre
+     * Le contenant du café retourné ne doit pas être vide et doit avoir la même capacité que le contenant passsé en paramètre
+     * Le contenant doit également avoir son coffeeType qui est égale au type de café passé en paramètre
+     * Le nombre de café de la machine doit être incrémenté de 1
+     * @param container Contenant pour faire couler le café
+     * @param coffeeType Type de café dans l'énumération CoffeeType.java
+     * @return Contenant non vide avec son type de café
+     * @throws LackOfWaterInTankException Exception à lever lorsque que l'on manque d'eau dans le réservoir, message &quot;You must plug your coffee machine to an electrical plug.&quot;
+     * @throws MachineNotPluggedException Exception levée lorsque que la machine n'est pas branchée, message : &quot;You must add more water in the water tank.&quot;
+     * @throws CupNotEmptyException Exception levée lorsque le contenant donné en paramètre n'est pas vide, message : &quot;The container given is not empty.&quot;
+     * @throws InterruptedException Exception levée lorsqu'un problème survient dans les Threads lors du sleep
+     * @throws CoffeeTypeCupDifferentOfCoffeeTypeTankException Exception levée lorsque le café souhaité est différent de celui chargé dans le réservoir de la cafetière
+     */
+    public CoffeeContainer makeACoffee(Container container, CoffeeType coffeeType) throws LackOfWaterInTankException, InterruptedException, MachineNotPluggedException, CupNotEmptyException, CoffeeTypeCupDifferentOfCoffeeTypeTankException {
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if(!isPlugged()){</span>
+<span class="fc" id="L42">            throw new MachineNotPluggedException(&quot;You must plug your coffee machine&quot;);</span>
+        }
+
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if(isOutOfOrder()){</span>
+<span class="fc" id="L46">            logger.warn(&quot;The machine is out of order. Please reset the coffee machine&quot;);</span>
+<span class="fc" id="L47">            return null;</span>
+        }
+
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        if (getWaterTank().getActualVolume() &lt; container.getCapacity()){</span>
+<span class="fc" id="L51">            throw new LackOfWaterInTankException(&quot;You must add more water in the water tank.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L54" title="All 2 branches covered.">        if (!container.isEmpty()){</span>
+<span class="fc" id="L55">            throw new CupNotEmptyException(&quot;The container given is not empty or null.&quot;);</span>
+        }
+
+<span class="pc bpc" id="L58" title="1 of 4 branches missed.">        if(coffeeType != this.beanTank.getBeanCoffeeType() &amp;&amp; coffeeType != this.secondaryBeanTank.getBeanCoffeeType()){</span>
+<span class="fc" id="L59">            throw new CoffeeTypeCupDifferentOfCoffeeTypeTankException(&quot;The type of coffee to be made in the cup is different from that in the tank.&quot;);</span>
+        }
+
+        //coffeeMachineFailure();
+
+
+<span class="fc" id="L65">        getElectricalResistance().waterHeating(container.getCapacity());</span>
+<span class="fc" id="L66">        getWaterPump().pumpWater(container.getCapacity(), getWaterTank());</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">        getCoffeeGrinder().grindCoffee(getBeanTank().getBeanCoffeeType().equals(coffeeType) ? getBeanTank() : secondaryBeanTank);</span>
+
+<span class="fc" id="L69">        CoffeeContainer coffeeContainer = null;</span>
+<span class="fc bfc" id="L70" title="All 2 branches covered.">        if(container instanceof Cup)</span>
+<span class="fc" id="L71">            coffeeContainer = new CoffeeCup((Cup) container, coffeeType);</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">        if(container instanceof Mug)</span>
+<span class="fc" id="L73">            coffeeContainer = new CoffeeMug((Mug) container, coffeeType);</span>
+
+<span class="fc" id="L75">        coffeeContainer.setEmpty(false);</span>
+<span class="fc" id="L76">        return coffeeContainer;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

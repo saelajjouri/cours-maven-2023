@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoffeeMachine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">machine</a> &gt; <a href="index.source.html" class="el_package">fr.imt.cours.machine</a> &gt; <span class="el_source">CoffeeMachine.java</span></div><h1>CoffeeMachine.java</h1><pre class="source lang-java linenums">package fr.imt.cours.machine;
+
+
+import fr.imt.cours.machine.component.*;
+import fr.imt.cours.machine.exception.CoffeeTypeCupDifferentOfCoffeeTypeTankException;
+import fr.imt.cours.machine.exception.LackOfWaterInTankException;
+import fr.imt.cours.machine.exception.MachineNotPluggedException;
+import fr.imt.cours.storage.coffee.type.CoffeeType;
+import fr.imt.cours.storage.container.*;
+import fr.imt.cours.storage.exception.CupNotEmptyException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import java.util.Random;
+
+
+import fr.imt.cours.machine.exception.*;
+
+public class CoffeeMachine {
+
+<span class="fc" id="L20">    public static final Logger logger = LogManager.getLogger(CoffeeMachine.class);</span>
+
+    protected final BeanTank beanTank;
+    private final WaterTank waterTank;
+    private final WaterPump waterPump;
+    private final CoffeeGrinder coffeeGrinder;
+    private final ElectricalResistance electricalResistance;
+    private boolean isPlugged;
+    private boolean isOutOfOrder;
+    private int nbCoffeeMade;
+    private Random randomGenerator;
+
+    public CoffeeMachine(double minCoffeeBeanTank, double maxCoffeeBeanTank, double minWaterTank, double maxWaterTank,
+<span class="fc" id="L33">                         double pumpingCapacity){</span>
+<span class="fc" id="L34">        this.beanTank = new BeanTank(0, minCoffeeBeanTank, maxCoffeeBeanTank, null);</span>
+<span class="fc" id="L35">        this.waterTank = new WaterTank(0, minWaterTank, maxWaterTank);</span>
+<span class="fc" id="L36">        this.waterPump = new WaterPump(pumpingCapacity/3600); //On convertit les L/h en L/seconde</span>
+<span class="fc" id="L37">        this.electricalResistance = new ElectricalResistance(1000);</span>
+<span class="fc" id="L38">        this.coffeeGrinder = new CoffeeGrinder(2000);</span>
+<span class="fc" id="L39">        this.isPlugged = false;</span>
+<span class="fc" id="L40">        this.isOutOfOrder = false;</span>
+<span class="fc" id="L41">        this.nbCoffeeMade = 15;</span>
+<span class="fc" id="L42">        this.randomGenerator = new Random();</span>
+<span class="fc" id="L43">    }</span>
+
+    /**
+     * Branche la machine à café au réseau électrique
+     */
+    public void plugToElectricalPlug(){
+<span class="fc" id="L49">        isPlugged = true;</span>
+<span class="fc" id="L50">    }</span>
+
+    /**
+     * RAZ de la machine quand elle est en défaut
+     */
+    public void reset(){
+<span class="fc" id="L56">        isOutOfOrder = false;</span>
+<span class="fc" id="L57">    }</span>
+
+    /**
+     * Ajoute de l'eau dans le réservoir
+     * @param waterVolume Volume d'eau en litres à ajouter
+     */
+    public void addWaterInTank(double waterVolume){
+<span class="fc" id="L64">        this.waterTank.increaseVolumeInTank(waterVolume);</span>
+<span class="fc" id="L65">    }</span>
+
+    public void addCoffeeInBeanTank(double coffeeVolume, CoffeeType coffeeType){
+<span class="fc" id="L68">        beanTank.increaseCoffeeVolumeInTank(coffeeVolume, coffeeType);</span>
+<span class="fc" id="L69">    }</span>
+
+    /**
+     * Permet de faire couler un café à partir d'un contenant et d'un type de café
+     * Doit retourner une instance d'un objet CoffeeMug ou CoffeeCup quand un Mug ou un Cup est passé en paramètre
+     * Le contenant du café retourné ne doit pas être vide et doit avoir la même capacité que le contenant passsé en paramètre
+     * Le contenant doit également avoir son coffeeType qui est égale au type de café passé en paramètre
+     * Le nombre de café de la machine doit être incrémenté de 1
+     * @param container Contenant pour faire couler le café
+     * @param coffeeType Type de café dans l'énumération CoffeeType.java
+     * @return Contenant non vide avec son type de café
+     * @throws LackOfWaterInTankException Exception à lever lorsque que l'on manque d'eau dans le réservoir, message &quot;You must plug your coffee machine to an electrical plug.&quot;
+     * @throws MachineNotPluggedException Exception levée lorsque que la machine n'est pas branchée, message : &quot;You must add more water in the water tank.&quot;
+     * @throws CupNotEmptyException Exception levée lorsque le contenant donné en paramètre n'est pas vide, message : &quot;The container given is not empty.&quot;
+     * @throws InterruptedException Exception levée lorsqu'un problème survient dans les Threads lors du sleep
+     * @throws CoffeeTypeCupDifferentOfCoffeeTypeTankException Exception levée lorsque le café souhaité est différent de celui chargé dans le réservoir de la cafetière
+     * @throws CannotMakeCremaWithSimpleCoffeeMachine Exception levée lorsque vous souhaitez faire un café type Crema avec un une machine classique
+     */
+    public CoffeeContainer makeACoffee(Container container, CoffeeType coffeeType) throws LackOfWaterInTankException, InterruptedException, MachineNotPluggedException, CupNotEmptyException, CoffeeTypeCupDifferentOfCoffeeTypeTankException, CannotMakeCremaWithSimpleCoffeeMachine {
+<span class="fc bfc" id="L88" title="All 2 branches covered.">        if(!isPlugged){</span>
+<span class="fc" id="L89">            throw new MachineNotPluggedException(&quot;You must plug your coffee machine.&quot;);</span>
+        }
+<span class="fc bfc" id="L91" title="All 2 branches covered.">        if(isOutOfOrder){</span>
+<span class="fc" id="L92">            logger.warn(&quot;The machine is out of order. Please reset the coffee machine&quot;);</span>
+<span class="fc" id="L93">            return null;</span>
+        }
+
+<span class="fc bfc" id="L96" title="All 2 branches covered.">        if (waterTank.getActualVolume() &lt; container.getCapacity()){</span>
+<span class="fc" id="L97">            throw new LackOfWaterInTankException(&quot;You must add more water in the water tank.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (!container.isEmpty()){</span>
+<span class="fc" id="L101">            throw new CupNotEmptyException(&quot;You must add more water in the water tank.&quot;);</span>
+        }
+
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if(coffeeType != this.beanTank.getBeanCoffeeType()){</span>
+<span class="fc" id="L105">            throw new CoffeeTypeCupDifferentOfCoffeeTypeTankException(&quot;The type of coffee to be made in the cup is different from that in the tank.&quot;);</span>
+        }
+
+        //coffeeMachineFailure();
+
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if(coffeeType.toString().contains(&quot;_CREMA&quot;)){</span>
+<span class="fc" id="L111">            throw new CannotMakeCremaWithSimpleCoffeeMachine(&quot;You cannot make an espresso with a CoffeeMachine, please use EspressoCoffeeMachine&quot;);</span>
+        }
+
+<span class="fc" id="L114">        electricalResistance.waterHeating(container.getCapacity());</span>
+<span class="fc" id="L115">        waterPump.pumpWater(container.getCapacity(), waterTank);</span>
+<span class="fc" id="L116">        coffeeGrinder.grindCoffee(this.beanTank);</span>
+
+<span class="fc" id="L118">        CoffeeContainer coffeeContainer = null;</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">        if(container instanceof Cup)</span>
+<span class="fc" id="L120">            coffeeContainer = new CoffeeCup(container, coffeeType);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if(container instanceof Mug)</span>
+<span class="fc" id="L122">            coffeeContainer = new CoffeeMug((Mug) container, coffeeType);</span>
+
+<span class="fc" id="L124">        coffeeContainer.setEmpty(false);</span>
+<span class="fc" id="L125">        return coffeeContainer;</span>
+    }
+
+    /**
+     * Tirage aléatoire d'un nombre en suivant une loi normale (loi régissant les pannes).
+     * Permet de simuler une panne sur la cafetière. Probabilité d'une panne d'environ 32% (1*Omega)
+     * Si la valeur absolue du double tiré est supérieure ou égale à 1 alors une on considère une panne
+     */
+    public void coffeeMachineFailure(){
+<span class="fc" id="L134">        double nxt = randomGenerator.nextGaussian();</span>
+
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        isOutOfOrder = (Math.abs(nxt) &gt;= 1);</span>
+<span class="fc" id="L137">    }</span>
+
+    public String toString(){
+<span class="fc" id="L140">        return &quot;Your coffee machine has : \n&quot; +</span>
+<span class="fc" id="L141">        &quot;- water tank : &quot; + waterTank.toString() + &quot;\n&quot; +</span>
+<span class="fc" id="L142">        &quot;- water pump : &quot; + waterPump.toString() + &quot;\n&quot; +</span>
+        &quot;- electrical resistance : &quot; + electricalResistance + &quot;\n&quot; +
+        &quot;- is plugged : &quot; + isPlugged + &quot;\n&quot;+
+        &quot;and made &quot; + nbCoffeeMade + &quot; coffees&quot;;
+    }
+
+    public WaterTank getWaterTank() {
+<span class="fc" id="L149">        return waterTank;</span>
+    }
+
+    public WaterPump getWaterPump() {
+<span class="fc" id="L153">        return waterPump;</span>
+    }
+
+    public ElectricalResistance getElectricalResistance() {
+<span class="fc" id="L157">        return electricalResistance;</span>
+    }
+
+    public boolean isPlugged() {
+<span class="fc" id="L161">        return isPlugged;</span>
+    }
+
+    public boolean isOutOfOrder() {
+<span class="fc" id="L165">        return isOutOfOrder;</span>
+    }
+
+    public void setOutOfOrder(boolean outOfOrder) {
+<span class="fc" id="L169">        isOutOfOrder = outOfOrder;</span>
+<span class="fc" id="L170">    }</span>
+
+    public int getNbCoffeeMade() {
+<span class="fc" id="L173">        return nbCoffeeMade;</span>
+    }
+
+    public void setNbCoffeeMade(int nbCoffeeMade) {
+<span class="fc" id="L177">        this.nbCoffeeMade = nbCoffeeMade;</span>
+<span class="fc" id="L178">    }</span>
+
+    public Random getRandomGenerator() {
+<span class="nc" id="L181">        return randomGenerator;</span>
+    }
+
+    public void setRandomGenerator(Random randomGenerator) {
+<span class="fc" id="L185">        this.randomGenerator = randomGenerator;</span>
+<span class="fc" id="L186">    }</span>
+
+    public CoffeeGrinder getCoffeeGrinder() {
+<span class="fc" id="L189">        return coffeeGrinder;</span>
+    }
+    public BeanTank getBeanTank() {
+<span class="fc" id="L192">        return beanTank;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

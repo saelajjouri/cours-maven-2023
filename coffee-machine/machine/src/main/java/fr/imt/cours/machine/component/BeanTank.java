@@ -30,4 +30,5 @@ public class BeanTank extends Tank {
     public void setBeanCoffeeType(CoffeeType beanCoffeeType) {
         this.beanCoffeeType = beanCoffeeType;
     }
+
 }

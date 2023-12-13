@@ -1,0 +1,6 @@
+cucumber\steps\CucumberStepsEspressoCoffeeMachineTest.class
+CoffeeMachineCucumberFunctionalTest.class
+EspressoCoffeeMachineTest.class
+CoffeeMachineUnitTest.class
+cucumber\steps\PlugMachineStep.class
+cucumber\steps\CucumberStepsCoffeeMachineMakeACoffeeTest.class
